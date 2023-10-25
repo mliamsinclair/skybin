@@ -1,86 +1,47 @@
 package proj.skybin.service;
 
-import java.util.*;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import proj.skybin.model.User;
 import proj.skybin.repository.UserRepository;
+import proj.skybin.model.User;
+import proj.skybin.model.Login;
 
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
-    public User getUser(Long id) {
-        Optional<User> user = userRepository.findById(id);
-        if (user.isPresent()) {
-            return user.get();
-        } else {
-            throw new UserNotFoundException("User not found");
-        }
+    public User createUser(User u) {
+        u.setPassword(passwordEncoder.encode(u.getPassword()));
+        userRepository.save(u);
+        return u;
     }
 
     @Override
-    public User createUser(User user) {
-        return userRepository.save(user);
-    }
-
-    @Override
-    public User updateUser(User user) {
-        Optional<User> userToUpdate = userRepository.findById(user.getId());
-        if (userToUpdate.isPresent()) {
-            return userRepository.save(user);
-        } else {
-            throw new UserNotFoundException("User not found");
-        }
-    }
-
-    @Override
-    public void deleteUser(Long id) {
-        Optional<User> user = userRepository.findById(id);
-        if (user.isPresent()) {
-            userRepository.deleteById(id);
-        } else {
-            throw new UserNotFoundException("User not found");
-        }
-    }
-
-    @Override
-    public User getUserByUsername(String username) {
-        User user = userRepository.findByUsername(username);
+    public String login(Login login) {
+        User user = userRepository.findByEmail(login.getEmail());
         if (user != null) {
-            return user;
+            String encryptedPass = user.getPassword();
+            boolean passwordMatch = passwordEncoder.matches(login.getPassword(), user.getPassword());
+            if (passwordMatch) {
+                Optional<User> userOptional = userRepository.findByEmailAndPassword(login.getEmail(),
+                        encryptedPass);
+                if (userOptional.isPresent()) {
+                    return "Login successful";
+                } else {
+                    return "Login failed";
+                }
+            } else {
+                return "Passwords do not match";
+            }
         } else {
-            throw new UserNotFoundException("User not found");
+            return "Email not found";
         }
-    }
-
-    @Override
-    public User getUserByEmail(String email) {
-        User user = userRepository.findByEmail(email);
-        if (user != null) {
-            return user;
-        } else {
-            throw new UserNotFoundException("User not found");
-        }
-    }
-
-    @Override
-    public User getUserByUsernameAndPassword(String username, String password) {
-        User user = userRepository.findByUsernameAndPassword(username, password);
-        if (user != null) {
-            return user;
-        } else {
-            throw new UserNotFoundException("User not found");
-        }
-    }
-}
-
-class UserNotFoundException extends RuntimeException {
-    public UserNotFoundException(String message) {
-        super(message);
     }
 }
