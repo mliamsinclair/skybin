@@ -18,12 +18,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/public/create")
+    @PostMapping("/create")
     public User createUser(@RequestBody User user) {
         return userService.createUser(user);
     }
 
-    @PostMapping("/public/login")
+    @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody Login login) {
         String response = userService.login(login);
         if (response.equals("Login successful"))

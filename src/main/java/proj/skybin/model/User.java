@@ -16,7 +16,6 @@ public class User {
     
     private String username;
     private String password;
-    private String email;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")

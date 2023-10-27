@@ -25,12 +25,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String login(Login login) {
-        User user = userRepository.findByEmail(login.getEmail());
+        User user = userRepository.findByUsername(login.getUsername());
         if (user != null) {
             String encryptedPass = user.getPassword();
             boolean passwordMatch = passwordEncoder.matches(login.getPassword(), user.getPassword());
             if (passwordMatch) {
-                Optional<User> userOptional = userRepository.findByEmailAndPassword(login.getEmail(),
+                Optional<User> userOptional = userRepository.findByUsernameAndPassword(login.getUsername(),
                         encryptedPass);
                 if (userOptional.isPresent()) {
                     return "Login successful";
