@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import proj.skybin.repository.UserRepository;
-import proj.skybin.model.User;
-import proj.skybin.model.Login;
+import proj.skybin.model.UserInfo;
+import proj.skybin.model.AuthRequest;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -17,20 +17,21 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public User createUser(User u) {
+    public UserInfo createUser(UserInfo u) {
         u.setPassword(passwordEncoder.encode(u.getPassword()));
         userRepository.save(u);
         return u;
     }
 
     @Override
-    public String login(Login login) {
-        User user = userRepository.findByUsername(login.getUsername());
-        if (user != null) {
+    public String login(AuthRequest login) {
+        Optional<UserInfo> oUser = userRepository.findByUsername(login.getUsername());
+        if (oUser.isPresent()) {
+            UserInfo user = oUser.get();
             String encryptedPass = user.getPassword();
             boolean passwordMatch = passwordEncoder.matches(login.getPassword(), user.getPassword());
             if (passwordMatch) {
-                Optional<User> userOptional = userRepository.findByUsernameAndPassword(login.getUsername(),
+                Optional<UserInfo> userOptional = userRepository.findByUsernameAndPassword(login.getUsername(),
                         encryptedPass);
                 if (userOptional.isPresent()) {
                     return "Login successful";

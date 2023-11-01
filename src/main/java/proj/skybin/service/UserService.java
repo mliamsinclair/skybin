@@ -1,9 +1,9 @@
 package proj.skybin.service;
 
-import proj.skybin.model.Login;
-import proj.skybin.model.User;
+import proj.skybin.model.AuthRequest;
+import proj.skybin.model.UserInfo;
 
 public interface UserService {
-    User createUser(User user);
-    String login(Login login);
+    UserInfo createUser(UserInfo user);
+    String login(AuthRequest login);
 }

@@ -9,13 +9,14 @@ import java.util.Date;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class User {
+public class UserInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     
     private String username;
     private String password;
+    private String roles = "ROLE_USER";
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
