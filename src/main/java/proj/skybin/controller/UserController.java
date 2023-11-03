@@ -1,11 +1,11 @@
 package proj.skybin.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,15 +34,6 @@ public class UserController {
         return userService.createUser(user);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody AuthRequest login) {
-        String response = userService.login(login);
-        if (response.equals("Login successful"))
-            return ResponseEntity.ok(response);
-        else
-            return ResponseEntity.badRequest().body(response);
-    }
-
     @PostMapping("/authenticate")
     public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(
@@ -52,7 +43,11 @@ public class UserController {
         } else {
             throw new UsernameNotFoundException("invalid user request !");
         }
+    }
 
+    @GetMapping("/home")
+    public String homePage() {
+        return "home";
     }
 
 }

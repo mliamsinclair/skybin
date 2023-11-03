@@ -9,6 +9,10 @@ import proj.skybin.repository.UserRepository;
 import proj.skybin.model.UserInfo;
 import proj.skybin.model.AuthRequest;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
@@ -20,6 +24,11 @@ public class UserServiceImpl implements UserService {
     public UserInfo createUser(UserInfo u) {
         u.setPassword(passwordEncoder.encode(u.getPassword()));
         userRepository.save(u);
+        try {
+            Files.createDirectory(Paths.get(System.getProperty("user.dir"), "filedir", u.getUsername()));
+        } catch (IOException e) {
+            System.out.println("Directory already exists");
+        }
         return u;
     }
 
