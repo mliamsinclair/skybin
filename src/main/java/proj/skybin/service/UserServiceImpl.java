@@ -22,6 +22,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserInfo createUser(UserInfo u) {
+        if (userRepository.findByUsername(u.getUsername()).isPresent()) {
+            return null;
+        }
         u.setPassword(passwordEncoder.encode(u.getPassword()));
         userRepository.save(u);
         try {

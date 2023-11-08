@@ -17,6 +17,8 @@ public class UserInfoUserDetails implements UserDetails {
     private String password;
     private List<GrantedAuthority> authorities;
 
+    // constructor
+    // takes a UserInfo object and converts it to a UserDetails object
     public UserInfoUserDetails(UserInfo userInfo) {
         name=userInfo.getUsername();
         password=userInfo.getPassword();

@@ -1,11 +1,12 @@
 package proj.skybin.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,11 +30,18 @@ public class UserController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    // create a new user
     @PostMapping("/create")
-    public UserInfo createUser(@RequestBody UserInfo user) {
-        return userService.createUser(user);
+    public ResponseEntity<String> createUser(@RequestBody UserInfo user) {
+        UserInfo u = userService.createUser(user);
+        if (u == null) {
+            throw new UsernameAlreadyExists("User already exists");
+        }
+        return ResponseEntity.ok("User created");
     }
 
+    // authenticate a user and return a token
+    // tokens are valid for two hours
     @PostMapping("/authenticate")
     public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(
@@ -45,9 +53,15 @@ public class UserController {
         }
     }
 
-    @GetMapping("/home")
-    public String homePage() {
-        return "home";
+    // exception for when a user already exists
+    public class UsernameAlreadyExists extends RuntimeException {
+        public UsernameAlreadyExists(String message) {
+            super(message);
+        }
     }
 
+    @ExceptionHandler(UsernameAlreadyExists.class)
+    public ResponseEntity<String> handleUsernameAlreadyExists(UsernameAlreadyExists e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }

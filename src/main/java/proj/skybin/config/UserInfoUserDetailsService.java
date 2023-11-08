@@ -17,6 +17,7 @@ public class UserInfoUserDetailsService implements UserDetailsService {
     @Autowired
     private UserRepository repository;
 
+    // load a user by username for authentication manager
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<UserInfo> userInfo = repository.findByUsername(username);
