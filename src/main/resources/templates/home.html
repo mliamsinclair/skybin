@@ -21,7 +21,7 @@
 
 <script defer>
     function downloadTest() {
-        const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmaWxldXNlciIsImlhdCI6MTY5OTAzMzYyMSwiZXhwIjoxNjk5MDQwODIxfQ.N6quhTJ-vkwOCdLmvMMoQuuvGrJsRYkRtCQHVuV4ERo'; // Replace with your actual Bearer token
+        const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlcjk5IiwiaWF0IjoxNjk5ODg4NTU5LCJleHAiOjE2OTk4OTU3NTl9.D5rbnseyTSiT74kkEtin5T3zpFGNCMNsp6w9u6p9DlM'; // Replace with your actual Bearer token
 
         let link = document.createElement("a");
         document.body.appendChild(link);
@@ -54,7 +54,7 @@ document.getElementById('uploadButton').addEventListener('click', function() {
     formData.append('file', fileInput.files[0]);
     formData.append('directory', '');
 
-    const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmaWxldXNlciIsImlhdCI6MTY5OTAzMzYyMSwiZXhwIjoxNjk5MDQwODIxfQ.N6quhTJ-vkwOCdLmvMMoQuuvGrJsRYkRtCQHVuV4ERo'; // Replace with your actual Bearer token
+    const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlcjk5IiwiaWF0IjoxNjk5ODg4NTU5LCJleHAiOjE2OTk4OTU3NTl9.D5rbnseyTSiT74kkEtin5T3zpFGNCMNsp6w9u6p9DlM'; // Replace with your actual Bearer token
 
     fetch('/api/user/upload', {
         method: 'POST',

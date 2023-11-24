@@ -38,8 +38,6 @@ public class FileController {
     }
 
     // upload a file to the server
-    // TODO: add a check to see if the file already exists
-    // TODO: add a check to see if the file is too large
     // the file is stored in the fildir folder within the user's home folder
     // and within the directory specified in the request
     // the file information is automatically added to the database
