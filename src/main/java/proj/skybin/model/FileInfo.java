@@ -2,6 +2,7 @@ package proj.skybin.model;
 
 import java.util.Date;
 
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,8 +17,12 @@ public class FileInfo {
     @Id
     private String filepath;
 
+    @ManyToOne
+    @JoinColumn(name = "folderpath")
+    private FolderInfo parent;
+
     private String filename;
-    private String extension;
+    private Boolean isDirectory;
     private String owner;
     private String directory;
     private String[] sharedUsers;

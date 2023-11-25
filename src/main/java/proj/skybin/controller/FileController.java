@@ -78,14 +78,7 @@ public class FileController {
         f.setFilename(filename);
         f.setDirectory(directory);
         f.setFilepath(path.toString());
-        // set the file extension
-        if (filename != null) {
-            if (filename.lastIndexOf(".") == -1) {
-                f.setExtension("");
-            } else {
-                f.setExtension(filename.substring(filename.lastIndexOf(".") + 1));
-            }
-        }
+        f.setIsDirectory(false);
         // add the file to the database
         fileService.createFile(f);
         return ResponseEntity.ok("File was uploaded successfully");
@@ -197,7 +190,9 @@ public class FileController {
             folder.setFilename(f.getFoldername());
             folder.setDirectory(f.getDirectory());
             folder.setFilepath(f.getFolderpath());
-            folder.setExtension("folder");
+            folder.setOwner(f.getOwner());
+            folder.setUploadDate(f.getUploadDate());
+            folder.setIsDirectory(true);
             files.add(folder);
         }
         return ResponseEntity.ok(files);

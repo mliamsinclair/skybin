@@ -16,6 +16,7 @@ public class FolderInfo {
     @Id
     private String folderpath;
 
+    private String parentpath;
     private String foldername;
     private String owner;
     private String directory;
