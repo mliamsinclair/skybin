@@ -1,5 +1,6 @@
 package proj.skybin.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import proj.skybin.model.FileInfo;
+import proj.skybin.model.FileNode;
 import proj.skybin.model.FolderInfo;
 import proj.skybin.service.FileService;
 import proj.skybin.service.FolderService;
@@ -149,6 +151,19 @@ public class FileController {
         String owner = principal.getName();
         List<FolderInfo> home = folderservice.getHomeDirectoryContents(owner);
         return ResponseEntity.ok(home);
+    }
+
+    // list all files and folders of a user
+    @GetMapping("/listFiles")
+    public ResponseEntity<FileNode> listFiles(Principal principal) throws Exception {
+        FileNode root;
+        try{
+            Path path = Paths.get(System.getProperty("user.dir"), "filedir", principal.getName());
+            root = new FileNode(path.toFile());
+        }  catch(Exception error){
+            throw new Exception("user does not exist");
+        }
+        return ResponseEntity.ok(root);
     }
 
     // get all files from a folder
