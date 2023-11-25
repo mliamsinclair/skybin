@@ -52,6 +52,19 @@ public class JwtService {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
+    // create a new token with the same claims as the old one
+    // but with a new expiration date
+    // tokens are valid for two hours
+    // returns null if the token is expired
+    public String refreshToken(String token){
+        if (isTokenExpired(token)) {
+            return null;
+        }
+        Claims claims=extractAllClaims(token);
+        claims.setIssuedAt(new Date(System.currentTimeMillis()));
+        return createToken(claims,claims.getSubject());
+    }
+
 
     public String generateToken(String userName){
         Map<String,Object> claims=new HashMap<>();
@@ -71,4 +84,5 @@ public class JwtService {
         byte[] keyBytes= Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
 }

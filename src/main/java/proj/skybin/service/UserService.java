@@ -6,4 +6,5 @@ import proj.skybin.model.UserInfo;
 public interface UserService {
     UserInfo createUser(UserInfo user);
     String login(AuthRequest login);
+    Boolean deleteUser(String username);
 }

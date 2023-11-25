@@ -13,9 +13,8 @@ import java.util.List;
 @Repository
 public interface FileRepository extends JpaRepository<FileInfo, String>{
     Optional<FileInfo> findByFilepath(String filepath);
-    Optional<FileInfo> findByFilename(String filename);
-    Optional<FileInfo> findByExtension(String extension);
-    Optional<FileInfo> findByOwner(String owner);
-    Optional<FileInfo> findByDirectory(String directory);
+    List<FileInfo> findByOwner(String owner);
+    List<FileInfo> findByDirectory(String directory);
     List<FileInfo> findByDirectoryAndOwner(String directory, String owner);
+    void deleteByFilepath(String filepath);
 }

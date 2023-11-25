@@ -20,6 +20,7 @@ public class FileInfo {
     private String extension;
     private String owner;
     private String directory;
+    private String[] sharedUsers;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "upload_date")

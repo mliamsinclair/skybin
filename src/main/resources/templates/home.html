@@ -21,12 +21,12 @@
 
 <script defer>
     function downloadTest() {
-        const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlcjk5IiwiaWF0IjoxNjk5ODg4NTU5LCJleHAiOjE2OTk4OTU3NTl9.D5rbnseyTSiT74kkEtin5T3zpFGNCMNsp6w9u6p9DlM'; // Replace with your actual Bearer token
+        const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlciIsImlhdCI6MTcwMDg2OTUyNCwiZXhwIjoxNzAwODc2NzI0fQ.2Z4C1lRlS69gW8P5KK6smUUZVGVWG0JNn9vNpvhXpZY'; // Replace with your actual Bearer token
 
         let link = document.createElement("a");
         document.body.appendChild(link);
         link.download = "test.txt";
-        link.href = "/api/user/download?filename=test.txt&directory=";
+        link.href = "/api/user/download?filename=test.txt&directory=/testfolder";
 
         fetch(link.href, {
             method: 'GET',
@@ -52,9 +52,9 @@ document.getElementById('uploadButton').addEventListener('click', function() {
 
     const formData = new FormData();
     formData.append('file', fileInput.files[0]);
-    formData.append('directory', '');
+    formData.append('directory', '/testfolder');
 
-    const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlcjk5IiwiaWF0IjoxNjk5ODg4NTU5LCJleHAiOjE2OTk4OTU3NTl9.D5rbnseyTSiT74kkEtin5T3zpFGNCMNsp6w9u6p9DlM'; // Replace with your actual Bearer token
+    const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlciIsImlhdCI6MTcwMDg2OTUyNCwiZXhwIjoxNzAwODc2NzI0fQ.2Z4C1lRlS69gW8P5KK6smUUZVGVWG0JNn9vNpvhXpZY'; // Replace with your actual Bearer token
 
     fetch('/api/user/upload', {
         method: 'POST',

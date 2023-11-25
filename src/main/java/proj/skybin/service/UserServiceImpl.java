@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import proj.skybin.repository.UserRepository;
 import proj.skybin.model.UserInfo;
 import proj.skybin.model.AuthRequest;
+import proj.skybin.model.FolderInfo;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,6 +20,8 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private FolderService folderService;
 
     @Override
     public UserInfo createUser(UserInfo u) {
@@ -29,6 +32,12 @@ public class UserServiceImpl implements UserService {
         userRepository.save(u);
         try {
             Files.createDirectory(Paths.get(System.getProperty("user.dir"), "filedir", u.getUsername()));
+            FolderInfo f = new FolderInfo();
+            f.setFolderpath(Paths.get(System.getProperty("user.dir"), "filedir", u.getUsername()).toString());
+            f.setOwner(u.getUsername());
+            f.setDirectory("root");
+            folderService.createFolder(f);
+
         } catch (IOException e) {
             System.out.println("Directory already exists");
         }
@@ -55,6 +64,17 @@ public class UserServiceImpl implements UserService {
             }
         } else {
             return "Email not found";
+        }
+    }
+
+    @Override
+    public Boolean deleteUser(String username) {
+        Optional<UserInfo> user = userRepository.findByUsername(username);
+        if (user.isPresent()) {
+            userRepository.delete(user.get());
+            return true;
+        } else {
+            return false;
         }
     }
 }
