@@ -13,6 +13,7 @@ public class FileNode {
         public final String name;
         public final String path;
         private List<FileNode> contents = new ArrayList<>();
+        public final boolean isDirectory;
 
         private static String getRelativePath(File baseDir, File file) {
             Path basePath = baseDir.toPath();
@@ -32,8 +33,8 @@ public class FileNode {
         public FileNode(File root) {
             this.name = root.getName();
             this.path = getRelativePath(Paths.get(System.getProperty("user.dir"), "filedir").toFile(), root);
-
-            if (root.isDirectory()){
+            this.isDirectory = root.isDirectory();
+            if (isDirectory){
                 File[] files = root.listFiles();
                 if (files != null)
                     for (File file : files){
