@@ -14,6 +14,7 @@ public interface FolderRepository extends JpaRepository<FolderInfo, String>{
     Optional<FolderInfo> findByFoldername(String foldername);
     List<FolderInfo> findByOwner(String owner);
     Optional<FolderInfo> findByDirectory(String directory);
+    Optional<FolderInfo>findByOwnerAndDirectoryAndFoldername(String owner, String directory, String foldername);
     List<FolderInfo> findByFolderpathAndOwner(String folderpath, String owner);
     List<FolderInfo> findByDirectoryAndOwner(String directory, String owner);
 }

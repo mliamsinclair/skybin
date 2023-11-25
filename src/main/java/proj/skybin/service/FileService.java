@@ -37,6 +37,10 @@ public class FileService {
         return fileRepository.findByFilepath(filepath);
     }
 
+    public FileInfo getFile(String owner, String directory, String filename) {
+        return fileRepository.findByOwnerAndDirectoryAndFilename(owner, directory, filename).orElse(null);
+    }
+
     public List<FileInfo> getDirectoryContents(String directory, String owner) {
         return fileRepository.findByDirectoryAndOwner(directory, owner);
     }

@@ -28,6 +28,10 @@ public class FolderService {
         return folderRepository.findByFolderpath(folderpath).orElse(null);
     }
 
+    public FolderInfo getFolder(String owner, String directory, String foldername) {
+        return folderRepository.findByOwnerAndDirectoryAndFoldername(owner, directory, foldername).orElse(null);
+    }
+
     public List<FolderInfo> getHomeDirectoryContents(String owner) {
         return folderRepository.findByOwner(owner);
     }

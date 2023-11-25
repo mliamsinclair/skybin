@@ -16,5 +16,6 @@ public interface FileRepository extends JpaRepository<FileInfo, String>{
     List<FileInfo> findByOwner(String owner);
     List<FileInfo> findByDirectory(String directory);
     List<FileInfo> findByDirectoryAndOwner(String directory, String owner);
+    Optional<FileInfo> findByOwnerAndDirectoryAndFilename(String owner, String directory, String filename);
     void deleteByFilepath(String filepath);
 }

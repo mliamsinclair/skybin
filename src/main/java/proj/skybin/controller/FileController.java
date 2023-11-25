@@ -198,6 +198,39 @@ public class FileController {
         return ResponseEntity.ok(files);
     }
 
+    // return information on a specific file
+    // uses the provided token to get the username
+    @GetMapping("/file")
+    public ResponseEntity<FileInfo> getFileInfo(Principal principal, @RequestParam String directory,
+            @RequestParam String filename) {
+        if (directory == null) {
+            directory = "";
+        }
+        String owner = principal.getName();
+        FileInfo f = fileService.getFile(owner, directory, filename);
+        if (f == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        return ResponseEntity.ok(f);
+    }
+
+    // return information on a specific folder
+    // uses the provided token to get the username
+    // requires the directory and foldername of the folder
+    @GetMapping("/folder")
+    public ResponseEntity<FolderInfo> getFolderInfo(Principal principal, @RequestParam String directory,
+            @RequestParam String foldername) {
+        if (directory == null) {
+            directory = "";
+        }
+        String owner = principal.getName();
+        FolderInfo f = folderservice.getFolder(owner, directory, foldername);
+        if (f == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        return ResponseEntity.ok(f);
+    }
+
     // delete a file from the server
     // uses the provided token to get the username
     @DeleteMapping("/deleteFile")
