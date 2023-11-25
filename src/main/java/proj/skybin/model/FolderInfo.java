@@ -19,8 +19,6 @@ public class FolderInfo {
     private String foldername;
     private String owner;
     private String directory;
-    private String[] files;
-    private String[] folders;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "upload_date")

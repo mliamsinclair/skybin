@@ -1,6 +1,5 @@
 package proj.skybin.controller;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,8 +10,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import proj.skybin.model.FileInfo;
 import proj.skybin.model.FileNode;
@@ -55,8 +57,8 @@ public class FileController {
     public ResponseEntity<String> uploadFile(Principal principal, @RequestParam String directory,
             @RequestParam MultipartFile file) throws IOException {
         // check if the directory is null/empty/invalid
-        if (directory == null || directory.equals("null") || directory.equals("/")) {
-            directory = "";
+        if (directory == null || directory.equals("null") || directory.equals("")) {
+            directory = "/";
         }
         // check if the file is empty
         if (file.isEmpty()) {
@@ -138,6 +140,7 @@ public class FileController {
         String folderpath = path.toString();
         folder.setFolderpath(folderpath);
         folder.setOwner(principal.getName());
+        folder.setDirectory(directory);
         // add the folder to the database
         folderservice.createFolder(folder);
         return ResponseEntity.ok("Folder was created successfully");
@@ -146,7 +149,7 @@ public class FileController {
     // get all folders in the user's directory
     // uses the provided token to get the username
     // list of files is returned in the 'files' array of the FolderInfo object
-    @GetMapping("/home")
+    @GetMapping("/folders")
     public ResponseEntity<List<FolderInfo>> getHomeDirectoryContents(Principal principal) {
         String owner = principal.getName();
         List<FolderInfo> home = folderservice.getHomeDirectoryContents(owner);
@@ -155,13 +158,13 @@ public class FileController {
 
     // list all files and folders of a user
     @GetMapping("/listFiles")
-    public ResponseEntity<FileNode> listFiles(Principal principal) throws Exception {
+    public ResponseEntity<FileNode> listFiles(Principal principal) {
         FileNode root;
-        try{
+        try {
             Path path = Paths.get(System.getProperty("user.dir"), "filedir", principal.getName());
             root = new FileNode(path.toFile());
-        }  catch(Exception error){
-            throw new Exception("user does not exist");
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to list files", e);
         }
         return ResponseEntity.ok(root);
     }
@@ -169,7 +172,7 @@ public class FileController {
     // get all files from a folder
     // if the directory is null, the user's home directory is used
     // uses the provided token to get the username
-    @GetMapping("/files")
+    @GetMapping("/folderFiles")
     public ResponseEntity<List<FileInfo>> getFolderContents(Principal principal, @RequestParam String directory) {
         if (directory == null || directory.equals("") || directory.equals("/")) {
             List<FileInfo> files = fileService.getAllFiles(principal.getName());
@@ -385,5 +388,17 @@ public class FileController {
             }
         }
         return ResponseEntity.ok(files);
+    }
+
+    // user not found exception
+    public class UserNotFoundException extends Exception {
+        public UserNotFoundException(String errorMessage) {
+            super(errorMessage);
+        }
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

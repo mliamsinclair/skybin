@@ -1,7 +1,4 @@
 package proj.skybin.service;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,27 +13,7 @@ public class FolderService {
     private FolderRepository folderRepository;
 
     public FolderInfo createFolder(FolderInfo folder) {
-        Path parentPath = Paths.get(System.getProperty("user.dir"), "filedir", folder.getOwner(), folder.getDirectory());
-        String parentPathString = parentPath.toString();
-        Optional<FolderInfo> parent = folderRepository.findByFolderpath(parentPathString);
-        if (parent.isPresent()) {
-            String[] parentFolders = parent.get().getFolders();
-            if (parentFolders == null) {
-                parentFolders = new String[1];
-                parentFolders[0] = folder.getFoldername();
-            } else {
-                String[] newFolders = new String[parentFolders.length + 1];
-                for (int i = 0; i < parentFolders.length; i++) {
-                    newFolders[i] = parentFolders[i];
-                }
-                newFolders[parentFolders.length] = folder.getFoldername();
-                parentFolders = newFolders;
-            }
-            parent.get().setFolders(parentFolders);
-            folderRepository.save(parent.get());
-        }
-        folderRepository.save(folder);
-        return folder;
+        return folderRepository.save(folder);
     }
 
     public FolderInfo getFolder(String folderpath) {
