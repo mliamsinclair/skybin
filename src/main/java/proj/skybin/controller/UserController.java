@@ -68,16 +68,8 @@ public class UserController {
     // refresh a token
     // tokens are valid for two hours
     @PostMapping("/refresh")
-    public String refreshToken(@RequestBody String token) {
-        // check if the token is expired
-        // if it is, return null
-        // otherwise, return a new token
-        String newToken = jwtService.refreshToken(token);
-        if (newToken == null) {
-            throw new UsernameNotFoundException("Token is expired!");
-        } else {
-            return newToken;
-        }
+    public String refreshToken(Principal principal) {
+        return jwtService.generateToken(principal.getName());
     }
 
     // delete a user
