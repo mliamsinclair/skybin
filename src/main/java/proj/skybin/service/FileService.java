@@ -21,7 +21,6 @@ public class FileService {
     @Autowired
     private FolderRepository folderRepository;
 
-    // TODO: add error handling and test parent folder join
     public FileInfo createFile(FileInfo f) {
         // find parent folder
         String parentPath = f.getFilepath().substring(0, f.getFilepath().lastIndexOf("/"));

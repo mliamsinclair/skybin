@@ -16,4 +16,10 @@ public class TestPageController {
     public String indexPage() {
         return "home";
     }
+
+    // server index.html
+    @GetMapping("/index")
+    public String index() {
+        return "index";
+    }
 }
