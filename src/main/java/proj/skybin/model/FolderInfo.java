@@ -1,6 +1,11 @@
 package proj.skybin.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -16,7 +21,19 @@ public class FolderInfo {
     @Id
     private String folderpath;
 
-    private String parentpath;
+    @ManyToOne
+    @JoinColumn(name = "parentpath")
+    @JsonBackReference
+    private FolderInfo parent;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<FolderInfo> subfolders = new ArrayList<>();
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<FileInfo> files = new ArrayList<>();
+
     private String foldername;
     private String owner;
     private String directory;

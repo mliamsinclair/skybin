@@ -3,6 +3,8 @@ package proj.skybin.service;
 import proj.skybin.model.FileInfo;
 import proj.skybin.model.FolderInfo;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,11 +25,18 @@ public class FileService {
 
     public FileInfo createFile(FileInfo f) {
         // find parent folder
-        String parentPath = f.getFilepath().substring(0, f.getFilepath().lastIndexOf("/"));
+        Path parentPath = Paths.get(f.getFilepath()).getParent();
         // if parent folder exists, set parent directory
-        Optional<FolderInfo> parent = folderRepository.findByFolderpath(parentPath);
+        Optional<FolderInfo> parent = folderRepository.findByFolderpath(parentPath.toString());
         if (parent.isPresent()) {
             f.setParent(parent.get());
+            if (parent.get().getFiles() == null) {
+                parent.get().setFiles(new java.util.ArrayList<>());
+            }
+            parent.get().getFiles().add(f);
+            folderRepository.save(parent.get());
+            f.setParentpath(parentPath.toString());
+            
         }
         return fileRepository.save(f);
     }

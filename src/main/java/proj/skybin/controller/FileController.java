@@ -150,6 +150,15 @@ public class FileController {
     }
 
     // list all files and folders of a user
+    // using data from the database
+    @GetMapping("/home")
+    public ResponseEntity<FolderInfo> getHomeDirectory(Principal principal) {
+        String owner = principal.getName();
+        FolderInfo home = folderservice.getFolder(owner, "root", owner);
+        return ResponseEntity.ok(home);
+    }
+
+    // list all files and folders of a user
     @GetMapping("/listFiles")
     public ResponseEntity<FileNode> listFiles(Principal principal) {
         FileNode root;
@@ -173,28 +182,6 @@ public class FileController {
         }
         String owner = principal.getName();
         List<FileInfo> files = fileService.getDirectoryContents(directory, owner);
-        return ResponseEntity.ok(files);
-    }
-
-    // get all files and folders in the user's directory
-    // uses the provided token to get the username
-    // the folders are added to the files list and treated as files
-    @GetMapping("/all")
-    public ResponseEntity<List<FileInfo>> getAllDirectoryContents(Principal principal) {
-        String owner = principal.getName();
-        List<FileInfo> files = fileService.getAllFiles(owner);
-        List<FolderInfo> folders = folderservice.getHomeDirectoryContents(owner);
-        // add the folders to the files list
-        for (FolderInfo f : folders) {
-            FileInfo folder = new FileInfo();
-            folder.setFilename(f.getFoldername());
-            folder.setDirectory(f.getDirectory());
-            folder.setFilepath(f.getFolderpath());
-            folder.setOwner(f.getOwner());
-            folder.setUploadDate(f.getUploadDate());
-            folder.setIsDirectory(true);
-            files.add(folder);
-        }
         return ResponseEntity.ok(files);
     }
 

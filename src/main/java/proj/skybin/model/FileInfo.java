@@ -2,6 +2,7 @@ package proj.skybin.model;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -17,10 +18,12 @@ public class FileInfo {
     @Id
     private String filepath;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "folderpath")
     private FolderInfo parent;
 
+    private String parentpath;
     private String filename;
     private Boolean isDirectory;
     private String owner;

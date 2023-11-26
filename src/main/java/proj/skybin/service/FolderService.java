@@ -1,4 +1,5 @@
 package proj.skybin.service;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -18,8 +19,14 @@ public class FolderService {
         // find parent folder
         Path parentPath = Paths.get(folder.getFolderpath()).getParent();
         // if parent folder exists, set parent directory
-        if (parentPath != null) {
-            folder.setParentpath(parentPath.toString());
+        Optional<FolderInfo> parent = folderRepository.findByFolderpath(parentPath.toString());
+        if (parent.isPresent()) {
+            if (parent.get().getSubfolders() == null) {
+                parent.get().setSubfolders(new ArrayList<>());
+            }
+            parent.get().getSubfolders().add(folder);
+            folder.setParent(parent.get());
+            folderRepository.save(parent.get());
         }
         return folderRepository.save(folder);
     }
@@ -54,6 +61,5 @@ public class FolderService {
     public void updateFolder(FolderInfo folder) {
         folderRepository.save(folder);
     }
-
 
 }
