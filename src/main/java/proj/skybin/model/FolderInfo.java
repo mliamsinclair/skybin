@@ -19,7 +19,15 @@ import lombok.NoArgsConstructor;
 @Table(name = "folders")
 public class FolderInfo {
     @Id
-    private String folderpath;
+    @Column(name = "folderpath")
+    private String path;
+    private String name;
+    private String owner;
+    private String directory;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "upload_date")
+    private Date uploadDate;
 
     @ManyToOne
     @JoinColumn(name = "parentpath")
@@ -33,14 +41,6 @@ public class FolderInfo {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<FileInfo> files = new ArrayList<>();
-
-    private String foldername;
-    private String owner;
-    private String directory;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "upload_date")
-    private Date uploadDate;
 
     @PrePersist
     protected void onCreate() {

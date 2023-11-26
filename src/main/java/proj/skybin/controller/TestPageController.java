@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import proj.skybin.service.FileService;
 import proj.skybin.service.FolderService;
 
 // test controller to server login.html and home.html
-@RestController
+// change to @RestController to test file and folder creation
+@Controller
 public class TestPageController {
 
     @Autowired

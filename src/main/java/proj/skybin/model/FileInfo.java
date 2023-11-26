@@ -16,15 +16,16 @@ import lombok.NoArgsConstructor;
 @Table(name = "files")
 public class FileInfo {
     @Id
-    private String filepath;
+    @Column(name = "filepath")
+    private String path;
 
-    @JsonBackReference
     @ManyToOne
-    @JoinColumn(name = "folderpath")
+    @JoinColumn(name = "folderpath", referencedColumnName = "folderpath")
+    @JsonBackReference
     private FolderInfo parent;
 
     private String parentpath;
-    private String filename;
+    private String name;
     private Boolean isDirectory;
     private String owner;
     private String directory;

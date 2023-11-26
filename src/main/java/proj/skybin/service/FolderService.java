@@ -17,9 +17,9 @@ public class FolderService {
 
     public FolderInfo createFolder(FolderInfo folder) {
         // find parent folder
-        Path parentPath = Paths.get(folder.getFolderpath()).getParent();
+        Path parentPath = Paths.get(folder.getPath()).getParent();
         // if parent folder exists, set parent directory
-        Optional<FolderInfo> parent = folderRepository.findByFolderpath(parentPath.toString());
+        Optional<FolderInfo> parent = folderRepository.findByPath(parentPath.toString());
         if (parent.isPresent()) {
             if (parent.get().getSubfolders() == null) {
                 parent.get().setSubfolders(new ArrayList<>());
@@ -32,11 +32,11 @@ public class FolderService {
     }
 
     public FolderInfo getFolder(String folderpath) {
-        return folderRepository.findByFolderpath(folderpath).orElse(null);
+        return folderRepository.findByPath(folderpath).orElse(null);
     }
 
     public FolderInfo getFolder(String owner, String directory, String foldername) {
-        return folderRepository.findByOwnerAndDirectoryAndFoldername(owner, directory, foldername).orElse(null);
+        return folderRepository.findByOwnerAndDirectoryAndName(owner, directory, foldername).orElse(null);
     }
 
     public List<FolderInfo> getHomeDirectoryContents(String owner) {
@@ -48,7 +48,7 @@ public class FolderService {
         List<FolderInfo> folders = folderRepository.findByDirectoryAndOwner(directory, owner);
         // call recursive function to get all subfolders
         for (FolderInfo f : folders) {
-            List<FolderInfo> subFolders = getSubFolders((f.getDirectory() + f.getFoldername() + "/"), owner);
+            List<FolderInfo> subFolders = getSubFolders((f.getDirectory() + f.getName() + "/"), owner);
             folders.addAll(subFolders);
         }
         return folders;

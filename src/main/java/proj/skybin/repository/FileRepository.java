@@ -12,10 +12,10 @@ import java.util.List;
 @EnableJpaRepositories
 @Repository
 public interface FileRepository extends JpaRepository<FileInfo, String>{
-    Optional<FileInfo> findByFilepath(String filepath);
+    Optional<FileInfo> findByPath(String filepath);
     List<FileInfo> findByOwner(String owner);
     List<FileInfo> findByDirectory(String directory);
     List<FileInfo> findByDirectoryAndOwner(String directory, String owner);
-    Optional<FileInfo> findByOwnerAndDirectoryAndFilename(String owner, String directory, String filename);
-    void deleteByFilepath(String filepath);
+    Optional<FileInfo> findByOwnerAndDirectoryAndName(String owner, String directory, String name);
+    void deleteByPath(String filepath);
 }

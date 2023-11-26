@@ -25,9 +25,9 @@ public class FileService {
 
     public FileInfo createFile(FileInfo f) {
         // find parent folder
-        Path parentPath = Paths.get(f.getFilepath()).getParent();
+        Path parentPath = Paths.get(f.getPath()).getParent();
         // if parent folder exists, set parent directory
-        Optional<FolderInfo> parent = folderRepository.findByFolderpath(parentPath.toString());
+        Optional<FolderInfo> parent = folderRepository.findByPath(parentPath.toString());
         if (parent.isPresent()) {
             f.setParent(parent.get());
             if (parent.get().getFiles() == null) {
@@ -36,17 +36,16 @@ public class FileService {
             parent.get().getFiles().add(f);
             folderRepository.save(parent.get());
             f.setParentpath(parentPath.toString());
-            
         }
         return fileRepository.save(f);
     }
 
     public Optional<FileInfo> getFile(String filepath) {
-        return fileRepository.findByFilepath(filepath);
+        return fileRepository.findByPath(filepath);
     }
 
     public FileInfo getFile(String owner, String directory, String filename) {
-        return fileRepository.findByOwnerAndDirectoryAndFilename(owner, directory, filename).orElse(null);
+        return fileRepository.findByOwnerAndDirectoryAndName(owner, directory, filename).orElse(null);
     }
 
     public List<FileInfo> getDirectoryContents(String directory, String owner) {
@@ -58,6 +57,6 @@ public class FileService {
     }
 
     public void deleteFile(String filepath) {
-        fileRepository.deleteByFilepath(filepath);
+        fileRepository.deleteByPath(filepath);
     }
 }

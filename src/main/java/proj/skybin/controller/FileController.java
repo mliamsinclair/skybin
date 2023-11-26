@@ -75,9 +75,9 @@ public class FileController {
         FileInfo f = new FileInfo();
         f.setOwner(principal.getName());
         String filename = file.getOriginalFilename();
-        f.setFilename(filename);
+        f.setName(filename);
         f.setDirectory(directory);
-        f.setFilepath(path.toString());
+        f.setPath(path.toString());
         f.setIsDirectory(false);
         // add the file to the database
         fileService.createFile(f);
@@ -115,7 +115,7 @@ public class FileController {
         if (directory == null) {
             directory = "/";
         }
-        String foldername = folder.getFoldername();
+        String foldername = folder.getName();
         if (foldername == null) {
             return ResponseEntity.badRequest().body("No folder name provided");
         }
@@ -131,7 +131,7 @@ public class FileController {
             return ResponseEntity.badRequest().body("Failed to create folder");
         }
         String folderpath = path.toString();
-        folder.setFolderpath(folderpath);
+        folder.setPath(folderpath);
         folder.setOwner(principal.getName());
         folder.setDirectory(directory);
         // add the folder to the database
@@ -155,6 +155,9 @@ public class FileController {
     public ResponseEntity<FolderInfo> getHomeDirectory(Principal principal) {
         String owner = principal.getName();
         FolderInfo home = folderservice.getFolder(owner, "root", owner);
+        if (home == null) {
+            return ResponseEntity.badRequest().body(home);
+        }
         return ResponseEntity.ok(home);
     }
 
@@ -224,7 +227,7 @@ public class FileController {
     public ResponseEntity<String> deleteFile(Principal principal, @RequestBody FileInfo file) {
         String owner = principal.getName();
         String directory = file.getDirectory();
-        String filename = file.getFilename();
+        String filename = file.getName();
         if (directory == null) {
             directory = "";
         }
@@ -251,7 +254,7 @@ public class FileController {
     public ResponseEntity<String> deleteFolder(Principal principal, @RequestBody FolderInfo folder) {
         String owner = principal.getName();
         String directory = folder.getDirectory();
-        String foldername = folder.getFoldername();
+        String foldername = folder.getName();
         if (directory == null) {
             directory = "";
         }
@@ -279,7 +282,7 @@ public class FileController {
             @RequestParam String user) {
         String owner = principal.getName();
         String directory = file.getDirectory();
-        String filename = file.getFilename();
+        String filename = file.getName();
         if (directory == null) {
             directory = "";
         }
@@ -329,7 +332,7 @@ public class FileController {
             @RequestParam String user) {
         String owner = principal.getName();
         String directory = file.getDirectory();
-        String filename = file.getFilename();
+        String filename = file.getName();
         if (directory == null) {
             directory = "";
         }

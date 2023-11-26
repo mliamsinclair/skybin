@@ -33,10 +33,10 @@ public class UserServiceImpl implements UserService {
         try {
             Files.createDirectory(Paths.get(System.getProperty("user.dir"), "filedir", u.getUsername()));
             FolderInfo f = new FolderInfo();
-            f.setFolderpath(Paths.get(System.getProperty("user.dir"), "filedir", u.getUsername()).toString());
+            f.setPath(Paths.get(System.getProperty("user.dir"), "filedir", u.getUsername()).toString());
             f.setOwner(u.getUsername());
             f.setDirectory("root");
-            f.setFoldername(u.getUsername());
+            f.setName(u.getUsername());
             folderService.createFolder(f);
 
         } catch (IOException e) {

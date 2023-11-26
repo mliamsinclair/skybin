@@ -10,11 +10,11 @@ import java.util.List;
 @EnableJpaRepositories
 @Repository
 public interface FolderRepository extends JpaRepository<FolderInfo, String>{
-    Optional<FolderInfo> findByFolderpath(String folderpath);
-    Optional<FolderInfo> findByFoldername(String foldername);
+    Optional<FolderInfo> findByPath(String folderpath);
+    Optional<FolderInfo> findByName(String name);
     List<FolderInfo> findByOwner(String owner);
     Optional<FolderInfo> findByDirectory(String directory);
-    Optional<FolderInfo>findByOwnerAndDirectoryAndFoldername(String owner, String directory, String foldername);
-    List<FolderInfo> findByFolderpathAndOwner(String folderpath, String owner);
+    Optional<FolderInfo>findByOwnerAndDirectoryAndName(String owner, String directory, String name);
+    List<FolderInfo> findByPathAndOwner(String folderpath, String owner);
     List<FolderInfo> findByDirectoryAndOwner(String directory, String owner);
 }
