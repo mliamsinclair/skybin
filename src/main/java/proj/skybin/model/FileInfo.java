@@ -24,6 +24,7 @@ public class FileInfo {
     @JsonBackReference
     private FolderInfo parent;
 
+    private String type = "file";
     private String parentpath;
     private String name;
     private Boolean isDirectory;
