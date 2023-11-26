@@ -27,7 +27,7 @@ public class FileInfo {
     private String type = "file";
     private String parentpath;
     private String name;
-    private Boolean isDirectory;
+    private Boolean isDirectory = false;
     private String owner;
     private String directory;
     private String[] sharedUsers;
