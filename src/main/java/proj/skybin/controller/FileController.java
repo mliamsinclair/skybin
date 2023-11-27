@@ -233,10 +233,10 @@ public class FileController {
     public ResponseEntity<String> deleteFile(Principal principal, @RequestBody FileInfo file) {
         String owner = principal.getName();
         String directory = file.getDirectory();
-        String filename = file.getName();
-        if (directory == null) {
+        if (directory == null || directory.equals("\\\\") || directory.equals("\\\\\\") || directory.equals("\\")) {
             directory = "";
         }
+        String filename = file.getName();
         Path path = Paths.get(System.getProperty("user.dir"), "filedir", owner, directory, filename);
         // check if the file exists
         if (Files.exists(path)) {
@@ -260,10 +260,10 @@ public class FileController {
     public ResponseEntity<String> deleteFolder(Principal principal, @RequestBody FolderInfo folder) {
         String owner = principal.getName();
         String directory = folder.getDirectory();
-        String foldername = folder.getName();
-        if (directory == null) {
+        if (directory == null || directory.equals("\\\\") || directory.equals("\\\\\\") || directory.equals("\\")) {
             directory = "";
         }
+        String foldername = folder.getName();
         Path path = Paths.get(System.getProperty("user.dir"), "filedir", owner, directory, foldername);
         // check if the folder exists
         if (Files.exists(path)) {

@@ -11,6 +11,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import proj.skybin.repository.FileRepository;
 import proj.skybin.repository.FolderRepository;
 
@@ -56,6 +57,7 @@ public class FileService {
         return fileRepository.findByOwner(owner);
     }
 
+    @Transactional
     public void deleteFile(String filepath) {
         // remove file from parent folder
         Path parentPath = Paths.get(filepath).getParent();
