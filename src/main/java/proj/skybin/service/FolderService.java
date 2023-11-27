@@ -58,16 +58,21 @@ public class FolderService {
         // delete all subfolders
         FolderInfo folder = folderRepository.findByPath(folderpath).orElse(null);
         if (folder != null) {
+            // delete all subfolders
             if (folder.getSubfolders() != null) {
-                for (FolderInfo f : folder.getSubfolders()) {
-                    deleteFolder(f.getPath());
+                List<FolderInfo> subfoldersCopy = new ArrayList<>(folder.getSubfolders());
+                for (FolderInfo subfolder : subfoldersCopy) {
+                    deleteFolder(subfolder.getPath());
                 }
+                folder.getSubfolders().clear();
             }
             // delete all files
             if (folder.getFiles() != null) {
-                for (FileInfo f : folder.getFiles()) {
-                    fileService.deleteFile(f.getPath());
+                List<FileInfo> filesCopy = new ArrayList<>(folder.getFiles());
+                for (FileInfo file : filesCopy) {
+                    fileService.deleteFile(file.getPath());
                 }
+                folder.getFiles().clear();
             }
         }
         // delete folder

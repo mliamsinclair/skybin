@@ -1,9 +1,12 @@
 package proj.skybin.controller;
 
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.security.Principal;
 import java.util.List;
 
@@ -306,16 +309,21 @@ public class FileController {
         if (Files.exists(path)) {
             // delete the folder
             try {
-                Files.delete(path);
+                Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        Files.delete(file);
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    @Override
+                    public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                        Files.delete(dir);
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
             } catch (IOException e) {
-                // replace all back slashes with forward slashes
-                String newPath = path.toString().replace("\\", "/");
-                path = Paths.get(newPath);
-                try {
-                    Files.delete(path);
-                } catch (IOException e2) {
-                    return ResponseEntity.badRequest().body("Failed to delete folder");
-                }
+                return ResponseEntity.badRequest().body("Failed to delete folder");
             }
             // delete the folder from the database
             folderservice.deleteFolder(path.toString());
