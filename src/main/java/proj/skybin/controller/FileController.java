@@ -73,7 +73,18 @@ public class FileController {
             return ResponseEntity.badRequest().body("File already exists");
         }
         // recieve the file and save it to the database
-        Files.copy(file.getInputStream(), path);
+        try {
+            Files.copy(file.getInputStream(), path);
+        } catch (IOException e) {
+            try {
+                // replace all back slashes with forward slashes
+                String newPath = path.toString().replace("\\", "/");
+                path = Paths.get(newPath);
+                Files.copy(file.getInputStream(), path);
+            } catch (IOException e2) {
+                return ResponseEntity.badRequest().body("Failed to upload file");
+            }
+        }
         FileInfo f = new FileInfo();
         f.setOwner(principal.getName());
         String filename = file.getOriginalFilename();
@@ -106,7 +117,19 @@ public class FileController {
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                     .body(resource);
         } else {
-            return ResponseEntity.badRequest().build();
+            // replace all back slashes with forward slashes
+            path = path.replace("\\", "/");
+            resource = new FileSystemResource(path + "/" + filename);
+            if (resource.exists()) {
+                String mimeType = Files.probeContentType(Paths.get(path + "/" + filename));
+                return ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType(mimeType))
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                "attachment; filename=\"" + resource.getFilename() + "\"")
+                        .body(resource);
+            } else {
+                return ResponseEntity.badRequest().body(null);
+            }
         }
     }
 
@@ -134,7 +157,14 @@ public class FileController {
         try {
             Files.createDirectory(path);
         } catch (IOException e) {
-            return ResponseEntity.badRequest().body("Failed to create folder" + path.toString());
+            // replace all back slashes with forward slashes
+            String newPath = path.toString().replace("\\", "/");
+            path = Paths.get(newPath);
+            try {
+                Files.createDirectory(path);
+            } catch (IOException e2) {
+                return ResponseEntity.badRequest().body("Failed to create folder");
+            }
         }
         String folderpath = path.toString();
         folder.setPath(folderpath);
@@ -244,7 +274,14 @@ public class FileController {
             try {
                 Files.delete(path);
             } catch (IOException e) {
-                return ResponseEntity.badRequest().body("Failed to delete file");
+                // replace all back slashes with forward slashes
+                String newPath = path.toString().replace("\\", "/");
+                path = Paths.get(newPath);
+                try {
+                    Files.delete(path);
+                } catch (IOException e2) {
+                    return ResponseEntity.badRequest().body("Failed to delete file");
+                }
             }
             // delete the file from the database
             fileService.deleteFile(path.toString());
@@ -271,7 +308,14 @@ public class FileController {
             try {
                 Files.delete(path);
             } catch (IOException e) {
-                return ResponseEntity.badRequest().body("Failed to delete folder");
+                // replace all back slashes with forward slashes
+                String newPath = path.toString().replace("\\", "/");
+                path = Paths.get(newPath);
+                try {
+                    Files.delete(path);
+                } catch (IOException e2) {
+                    return ResponseEntity.badRequest().body("Failed to delete folder");
+                }
             }
             // delete the folder from the database
             folderservice.deleteFolder(path.toString());
