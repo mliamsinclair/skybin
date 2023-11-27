@@ -92,8 +92,8 @@ public class FileController {
     @GetMapping("/download")
     public ResponseEntity<Resource> getFile(Principal principal, @RequestParam String directory,
             @RequestParam String filename) throws IOException {
-        if (directory == null) {
-            directory = "";
+        if (directory == null || directory.equals("null") || directory.equals("") || directory.equals("\\")) {
+            directory = "/";
         }
         // get the file from the server
         String path = System.getProperty("user.dir") + "/filedir/" + principal.getName() + directory;
@@ -106,7 +106,7 @@ public class FileController {
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                     .body(resource);
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -118,7 +118,7 @@ public class FileController {
     @PostMapping("/newfolder")
     public ResponseEntity<String> createFolder(Principal principal, @RequestBody FolderInfo folder) {
         String directory = folder.getDirectory();
-        if (directory == null) {
+        if (directory == null || directory.equals("null") || directory.equals("") || directory.equals("\\")) {
             directory = "/";
         }
         String foldername = folder.getName();
@@ -134,7 +134,7 @@ public class FileController {
         try {
             Files.createDirectory(path);
         } catch (IOException e) {
-            return ResponseEntity.badRequest().body("Failed to create folder");
+            return ResponseEntity.badRequest().body("Failed to create folder" + path.toString());
         }
         String folderpath = path.toString();
         folder.setPath(folderpath);
