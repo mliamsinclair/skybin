@@ -57,6 +57,13 @@ public class FileService {
     }
 
     public void deleteFile(String filepath) {
+        // remove file from parent folder
+        Path parentPath = Paths.get(filepath).getParent();
+        Optional<FolderInfo> parent = folderRepository.findByPath(parentPath.toString());
+        if (parent.isPresent()) {
+            parent.get().getFiles().removeIf(f -> f.getPath().equals(filepath));
+            folderRepository.save(parent.get());
+        }
         fileRepository.deleteByPath(filepath);
     }
 }

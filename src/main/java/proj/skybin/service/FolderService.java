@@ -6,6 +6,7 @@ import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import proj.skybin.model.FileInfo;
 import proj.skybin.model.FolderInfo;
 import proj.skybin.repository.FolderRepository;
 
@@ -14,6 +15,9 @@ public class FolderService {
 
     @Autowired
     private FolderRepository folderRepository;
+
+    @Autowired
+    private FileService fileService;
 
     public FolderInfo createFolder(FolderInfo folder) {
         // find parent folder
@@ -43,18 +47,30 @@ public class FolderService {
         return folderRepository.findByOwner(owner);
     }
 
-    public List<FolderInfo> getSubFolders(String directory, String owner) {
-        // get all folders in directory
-        List<FolderInfo> folders = folderRepository.findByDirectoryAndOwner(directory, owner);
-        // call recursive function to get all subfolders
-        for (FolderInfo f : folders) {
-            List<FolderInfo> subFolders = getSubFolders((f.getDirectory() + f.getName() + "/"), owner);
-            folders.addAll(subFolders);
-        }
-        return folders;
-    }
-
     public void deleteFolder(String folderpath) {
+        // remove folder from parent folder
+        Path parentPath = Paths.get(folderpath).getParent();
+        Optional<FolderInfo> parent = folderRepository.findByPath(parentPath.toString());
+        if (parent.isPresent()) {
+            parent.get().getSubfolders().removeIf(f -> f.getPath().equals(folderpath));
+            folderRepository.save(parent.get());
+        }
+        // delete all subfolders
+        FolderInfo folder = folderRepository.findByPath(folderpath).orElse(null);
+        if (folder != null) {
+            if (folder.getSubfolders() != null) {
+                for (FolderInfo f : folder.getSubfolders()) {
+                    deleteFolder(f.getPath());
+                }
+            }
+            // delete all files
+            if (folder.getFiles() != null) {
+                for (FileInfo f : folder.getFiles()) {
+                    fileService.deleteFile(f.getPath());
+                }
+            }
+        }
+        // delete folder
         folderRepository.deleteById(folderpath);
     }
 

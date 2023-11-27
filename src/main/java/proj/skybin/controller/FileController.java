@@ -10,7 +10,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -57,7 +59,7 @@ public class FileController {
     public ResponseEntity<String> uploadFile(Principal principal, @RequestParam String directory,
             @RequestParam MultipartFile file) throws IOException {
         // check if the directory is null/empty/invalid
-        if (directory == null || directory.equals("null") || directory.equals("")) {
+        if (directory == null || directory.equals("null") || directory.equals("") || directory.equals("\\")) {
             directory = "/";
         }
         // check if the file is empty
@@ -89,7 +91,7 @@ public class FileController {
     // uses the provided token to get the username
     @GetMapping("/download")
     public ResponseEntity<Resource> getFile(Principal principal, @RequestParam String directory,
-            @RequestParam String filename) {
+            @RequestParam String filename) throws IOException {
         if (directory == null) {
             directory = "";
         }
@@ -98,7 +100,11 @@ public class FileController {
         Resource resource = new FileSystemResource(path + "/" + filename);
         // check if the file exists
         if (resource.exists()) {
-            return ResponseEntity.ok().body(resource);
+            String mimeType = Files.probeContentType(Paths.get(path + "/" + filename));
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(mimeType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
         } else {
             return ResponseEntity.notFound().build();
         }
