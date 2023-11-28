@@ -300,7 +300,14 @@ public class FileController {
                 }
             }
             // delete the file from the database
-            fileService.deleteFile(path.toString());
+            String pathString = path.toString();
+            String[] pathArray = pathString.split(owner);
+            if (pathArray.length == 1) {
+                pathString = owner;
+            } else {
+                pathString = owner + pathArray[1];
+            }
+            fileService.deleteFile(pathString);
             return ResponseEntity.ok("File was deleted successfully");
         } else {
             return ResponseEntity.badRequest().body("File does not exist");
@@ -339,7 +346,14 @@ public class FileController {
                 return ResponseEntity.badRequest().body("Failed to delete folder");
             }
             // delete the folder from the database
-            folderservice.deleteFolder(path.toString());
+            String pathString = path.toString();
+            String[] pathArray = pathString.split(owner);
+            if (pathArray.length == 1) {
+                pathString = owner;
+            } else {
+                pathString = owner + pathArray[1];
+            }
+            folderservice.deleteFolder(pathString);
             return ResponseEntity.ok("Folder was deleted successfully");
         } else {
             return ResponseEntity.badRequest().body("Folder does not exist");
