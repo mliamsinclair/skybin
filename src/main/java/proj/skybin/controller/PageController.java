@@ -1,22 +1,19 @@
 package proj.skybin.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.servlet.view.RedirectView;
 
-// test controller to server login.html and home.html
-// change to @RestController to test file and folder creation
 @Controller
 public class PageController {
 
-    // re-serve index.html
     @GetMapping("/account")
-    public String account() {
-        return "index";
+    public RedirectView account() {
+        return new RedirectView("/");
     }
 
-    // re-serve index.html
     @GetMapping("/about")
-    public String about() {
-        return "index";
+    public RedirectView about() {
+        return new RedirectView("/");
     }
 
 }
