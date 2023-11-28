@@ -20,10 +20,30 @@ public class FolderService {
     private FileService fileService;
 
     public FolderInfo createFolder(FolderInfo folder) {
+        String originalPath = folder.getPath();
+        // remove everything in the path after the owner's name
+        String[] path = folder.getPath().split(folder.getOwner());
+        if (path.length == 1) {
+            folder.setPath(folder.getOwner());
+        } else {
+            folder.setPath(folder.getOwner());
+            for (int i = 1; i < path.length; i++) {
+                folder.setPath(folder.getPath() + path[i]);
+            }
+        }
         // find parent folder
-        Path parentPath = Paths.get(folder.getPath()).getParent();
+        Path parentPath = Paths.get(originalPath).getParent();
         // if parent folder exists, set parent directory
-        Optional<FolderInfo> parent = folderRepository.findByPath(parentPath.toString());
+        String[] parentPathSplit = parentPath.toString().split(folder.getOwner());
+        String parentPathString = "";
+        if (parentPathSplit.length == 1) {
+            parentPathString = folder.getOwner();
+        } else if (parentPathSplit.length > 1) {
+            for (int i = 1; i < parentPathSplit.length; i++) {
+                parentPathString = parentPathString + parentPathSplit[i];
+            }
+        }
+        Optional<FolderInfo> parent = folderRepository.findByPath(parentPathString);
         if (parent.isPresent()) {
             if (parent.get().getSubfolders() == null) {
                 parent.get().setSubfolders(new ArrayList<>());
@@ -81,6 +101,10 @@ public class FolderService {
 
     public void updateFolder(FolderInfo folder) {
         folderRepository.save(folder);
+    }
+
+    public FolderInfo getFolderByPath(String path) {
+        return folderRepository.findByPath(path).orElse(null);
     }
 
 }

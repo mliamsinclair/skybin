@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import proj.skybin.model.DirectoryWrapper;
 import proj.skybin.model.FileInfo;
 import proj.skybin.model.FileNode;
 import proj.skybin.model.FolderInfo;
@@ -198,6 +199,18 @@ public class FileController {
             return ResponseEntity.badRequest().body(home);
         }
         return ResponseEntity.ok(home);
+    }
+
+    // list all files and folders of a user wrapped using the DirectoryWrapper class
+    @GetMapping("/homeWrapped")
+    public ResponseEntity<DirectoryWrapper> getHomeDirectoryWrapped(Principal principal) {
+        String owner = principal.getName();
+        FolderInfo home = folderservice.getFolderByPath(owner);
+        if (home == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        DirectoryWrapper homeWrapped = new DirectoryWrapper(home);
+        return ResponseEntity.ok(homeWrapped);
     }
 
     // list all files and folders of a user

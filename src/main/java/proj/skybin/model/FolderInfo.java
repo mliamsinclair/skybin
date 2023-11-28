@@ -18,10 +18,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "folders")
 public class FolderInfo {
+    private String name;
     @Id
     @Column(name = "folderpath")
     private String path;
-    private String name;
     private String owner;
     private String directory;
     private String type = "folder";

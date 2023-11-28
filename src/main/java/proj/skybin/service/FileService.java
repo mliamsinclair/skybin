@@ -25,10 +25,30 @@ public class FileService {
     private FolderRepository folderRepository;
 
     public FileInfo createFile(FileInfo f) {
+        String originalPath = f.getPath();
+        // remove everything in the path after the owner's name
+        String[] path = f.getPath().split(f.getOwner());
+        if (path.length == 1) {
+            f.setPath(f.getOwner());
+        } else {
+            f.setPath(f.getOwner());
+            for (int i = 1; i < path.length; i++) {
+                f.setPath(f.getPath() + path[i]);
+            }
+        }
         // find parent folder
-        Path parentPath = Paths.get(f.getPath()).getParent();
+        Path parentPath = Paths.get(originalPath).getParent();
         // if parent folder exists, set parent directory
-        Optional<FolderInfo> parent = folderRepository.findByPath(parentPath.toString());
+        String[] parentPathSplit = parentPath.toString().split(f.getOwner());
+        String parentPathString = "";
+        if (parentPathSplit.length == 1) {
+            parentPathString = f.getOwner();
+        } else if (parentPathSplit.length > 1) {
+            for (int i = 1; i < parentPathSplit.length; i++) {
+                parentPathString = parentPathString + parentPathSplit[i];
+            }
+        }
+        Optional<FolderInfo> parent = folderRepository.findByPath(parentPathString);
         if (parent.isPresent()) {
             f.setParent(parent.get());
             if (parent.get().getFiles() == null) {

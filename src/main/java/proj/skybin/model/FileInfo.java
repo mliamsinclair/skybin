@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "files")
 public class FileInfo {
+    private String name;
     @Id
     @Column(name = "filepath")
     private String path;
@@ -26,7 +27,6 @@ public class FileInfo {
 
     private String type = "file";
     private String parentpath;
-    private String name;
     private Boolean isDirectory = false;
     private String owner;
     private String directory;
