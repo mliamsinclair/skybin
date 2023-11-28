@@ -16,9 +16,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 
+import proj.skybin.controller.UserController.UsernameAlreadyExists;
 import proj.skybin.model.AuthRequest;
 import proj.skybin.model.UserInfo;
 import proj.skybin.service.JwtService;
@@ -82,14 +88,30 @@ public class UserController {
         if (userService.deleteUser(principal.getName())) {
             // delete user's directory
             Path path = Paths.get(System.getProperty("user.dir"), "filedir", principal.getName());
-            if (path.toFile().delete()) {
-                return ResponseEntity.ok("User deleted");
-            } else {
-                return ResponseEntity.badRequest().body("User directory not deleted");
+            // check if the folder exists
+            if (Files.exists(path)) {
+                // delete the folder
+                try {
+                    Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                        @Override
+                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                            Files.delete(file);
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        @Override
+                        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                            Files.delete(dir);
+                            return FileVisitResult.CONTINUE;
+                        }
+                    });
+                    return ResponseEntity.ok("user deleted");
+                } catch (IOException e) {
+                    return ResponseEntity.badRequest().body("Failed to delete user");
+                }
             }
-        } else {
-            return ResponseEntity.badRequest().body("User not found");
         }
+        return ResponseEntity.badRequest().body("User not found");
     }
 
     // exception for when a user already exists
