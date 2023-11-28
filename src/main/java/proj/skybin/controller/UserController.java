@@ -24,7 +24,6 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
-import proj.skybin.controller.UserController.UsernameAlreadyExists;
 import proj.skybin.model.AuthRequest;
 import proj.skybin.model.UserInfo;
 import proj.skybin.service.JwtService;
