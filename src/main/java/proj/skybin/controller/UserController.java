@@ -70,7 +70,7 @@ public class UserController {
                 return ResponseEntity.badRequest().body("Authentication failed");
             }
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Incorrent username or password");
+            return ResponseEntity.badRequest().body("Incorrect username or password");
         }
     }
 
