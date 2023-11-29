@@ -135,6 +135,7 @@ public class FileController {
     @GetMapping("/download")
     public ResponseEntity<Resource> getFile(Principal principal, @RequestParam String directory,
             @RequestParam String filename) throws IOException {
+        System.out.println("Directory: " + directory);
         // save current timestamp
         Instant start = Instant.now();
         userService.lock(principal.getName());
