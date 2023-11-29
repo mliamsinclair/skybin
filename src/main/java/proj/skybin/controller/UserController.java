@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -84,6 +85,7 @@ public class UserController {
     // this will also invalidate the user's token
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteUser(Principal principal) {
+        userService.lock(principal.getName());
         if (userService.deleteUser(principal.getName())) {
             // delete user's directory
             Path path = Paths.get(System.getProperty("user.dir"), "filedir", principal.getName());
@@ -95,21 +97,53 @@ public class UserController {
                         @Override
                         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                             Files.delete(file);
+                            userService.unlock(principal.getName());
                             return FileVisitResult.CONTINUE;
                         }
 
                         @Override
                         public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
                             Files.delete(dir);
+                            userService.unlock(principal.getName());
                             return FileVisitResult.CONTINUE;
                         }
                     });
+                    userService.unlock(principal.getName());
                     return ResponseEntity.ok("user deleted");
                 } catch (IOException e) {
+                    userService.unlock(principal.getName());
                     return ResponseEntity.badRequest().body("Failed to delete user");
                 }
             }
         }
+        userService.unlock(principal.getName());
+        return ResponseEntity.badRequest().body("User not found");
+    }
+
+    // update username
+    // this will update the user's username
+    // this will also update the user's directory name
+    @PutMapping("/update/username")
+    public ResponseEntity<String> updateUsername(Principal principal, @RequestBody String newUsername) {
+        userService.lock(principal.getName());
+        if (userService.updateUsername(principal.getName(), newUsername)) {
+            // rename user's directory
+            Path path = Paths.get(System.getProperty("user.dir"), "filedir", principal.getName());
+            Path newPath = Paths.get(System.getProperty("user.dir"), "filedir", newUsername);
+            // check if the folder exists
+            if (Files.exists(path)) {
+                // rename the folder
+                try {
+                    Files.move(path, newPath);
+                    userService.unlock(principal.getName());
+                    return ResponseEntity.ok("username updated");
+                } catch (IOException e) {
+                    userService.unlock(principal.getName());
+                    return ResponseEntity.badRequest().body("Failed to update username");
+                }
+            }
+        }
+        userService.unlock(principal.getName());
         return ResponseEntity.badRequest().body("User not found");
     }
 

@@ -85,4 +85,21 @@ public class FileService {
         }
         fileRepository.deleteByPath(filepath);
     }
+
+    // update file name
+    // this will update the file's name
+    // this will also update the file's path
+    public boolean renameFile(String filepath, String newName) {
+        Optional<FileInfo> file = fileRepository.findByPath(filepath);
+        if (file.isPresent()) {
+            // update file name
+            file.get().setName(newName);
+            // update file path
+            String newPath = filepath.substring(0, filepath.lastIndexOf("/") + 1) + newName;
+            file.get().setPath(newPath);
+            fileRepository.save(file.get());
+            return true;
+        }
+        return false;
+    }
 }
