@@ -28,6 +28,8 @@ public class UserInfo {
     private String username;
     private String password;
     private String roles = "ROLE_USER";
+    @Column(name = "lock_column")
+    private Boolean lock = false;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")

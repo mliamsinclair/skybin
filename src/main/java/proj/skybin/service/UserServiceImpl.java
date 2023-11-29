@@ -12,6 +12,7 @@ import proj.skybin.model.FolderInfo;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Service
@@ -73,9 +74,87 @@ public class UserServiceImpl implements UserService {
         Optional<UserInfo> user = userRepository.findByUsername(username);
         if (user.isPresent()) {
             userRepository.delete(user.get());
+            // delete user's directory
+            Path path = Paths.get(System.getProperty("user.dir"), "filedir", username);
+            // check if the folder exists
+            if (path.toFile().exists()) {
+                // delete the folder
+                try {
+                    Files.walkFileTree(path, new java.nio.file.SimpleFileVisitor<Path>() {
+                        @Override
+                        public java.nio.file.FileVisitResult visitFile(Path file,
+                                java.nio.file.attribute.BasicFileAttributes attrs) throws IOException {
+                            Files.delete(file);
+                            return java.nio.file.FileVisitResult.CONTINUE;
+                        }
+
+                        @Override
+                        public java.nio.file.FileVisitResult postVisitDirectory(Path dir, IOException exc)
+                                throws IOException {
+                            Files.delete(dir);
+                            return java.nio.file.FileVisitResult.CONTINUE;
+                        }
+                    });
+                } catch (IOException e) {
+                    System.out.println("Error deleting user's directory");
+                }
+            }
             return true;
         } else {
             return false;
         }
+    }
+
+    @Override
+    public Boolean updateUsername(String username, String newUsername) {
+        Optional<UserInfo> user = userRepository.findByUsername(username);
+        if (user.isPresent()) {
+            user.get().setUsername(newUsername);
+            userRepository.save(user.get());
+            // rename user's directory
+            Path path = Paths.get(System.getProperty("user.dir"), "filedir", username);
+            Path newPath = Paths.get(System.getProperty("user.dir"), "filedir", newUsername);
+            // check if the folder exists
+            if (path.toFile().exists()) {
+                // rename the folder
+                try {
+                    Files.move(path, newPath);
+                } catch (IOException e) {
+                    System.out.println("Error renaming user's directory");
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Boolean lock(String username) {
+        Optional<UserInfo> user = userRepository.findByUsername(username);
+        if (user.isPresent()) {
+            while (user.get().getLock()) {
+                try {
+                    Thread.sleep(1000);
+                    user = userRepository.findByUsername(username);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            user.get().setLock(true);
+            userRepository.save(user.get());
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Boolean unlock(String username) {
+        Optional<UserInfo> user = userRepository.findByUsername(username);
+        if (user.isPresent()) {
+            user.get().setLock(false);
+            userRepository.save(user.get());
+            return true;
+        }
+        return false;
     }
 }

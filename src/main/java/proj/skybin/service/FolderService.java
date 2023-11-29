@@ -103,4 +103,42 @@ public class FolderService {
         return folderRepository.findByPath(path).orElse(null);
     }
 
+    // rename folder
+    // this will rename the folder
+    // this will also rename the folder's directory
+    // this will also rename the folder's path
+    public boolean renameFolder(String folderpath, String newFoldername) {
+        FolderInfo folder = folderRepository.findByPath(folderpath).orElse(null);
+        if (folder != null) {
+            // rename folder
+            folder.setName(newFoldername);
+            // rename directory
+            String[] path = folder.getDirectory().split(folder.getName());
+            String directory = "";
+            if (path.length == 1) {
+                directory = folder.getName();
+            } else {
+                directory = folder.getName();
+                for (int i = 1; i < path.length; i++) {
+                    directory = directory + path[i];
+                }
+            }
+            folder.setDirectory(directory);
+            // rename path
+            String[] path2 = folder.getPath().split(folder.getName());
+            String pathString = "";
+            if (path2.length == 1) {
+                pathString = folder.getName();
+            } else {
+                pathString = folder.getName();
+                for (int i = 1; i < path2.length; i++) {
+                    pathString = pathString + path2[i];
+                }
+            }
+            folder.setPath(pathString);
+            folderRepository.save(folder);
+            return true;
+        }
+        return false;
+    }
 }
