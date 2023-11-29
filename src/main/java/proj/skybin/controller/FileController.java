@@ -136,6 +136,7 @@ public class FileController {
     public ResponseEntity<Resource> getFile(Principal principal, @RequestParam String directory,
             @RequestParam String filename) throws IOException {
         System.out.println("Directory: " + directory);
+        System.out.println("Filename: " + filename);
         // save current timestamp
         Instant start = Instant.now();
         userService.lock(principal.getName());
@@ -143,7 +144,9 @@ public class FileController {
             directory = "/";
         }
         // get the file from the server
-        String path = System.getProperty("user.dir") + "/filedir/" + principal.getName() + directory + filename;
+        Path pathObject = Paths.get(System.getProperty("user.dir"), "filedir", principal.getName(), directory, filename);
+        String path = pathObject.toString();
+        System.out.println(path);
         Resource resource = new FileSystemResource(path);
         // check if the file exists
         if (resource.exists()) {

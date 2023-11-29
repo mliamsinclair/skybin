@@ -21,4 +21,9 @@ public class PageController {
         return new RedirectView("/");
     }
 
+    @GetMapping("/directory")
+    public RedirectView directory() {
+        return new RedirectView("/");
+    }
+
 }
