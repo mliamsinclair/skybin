@@ -75,30 +75,7 @@ public class UserServiceImpl implements UserService {
         if (user.isPresent()) {
             userRepository.delete(user.get());
             // delete user's directory
-            Path path = Paths.get(System.getProperty("user.dir"), "filedir", username);
-            // check if the folder exists
-            if (path.toFile().exists()) {
-                // delete the folder
-                try {
-                    Files.walkFileTree(path, new java.nio.file.SimpleFileVisitor<Path>() {
-                        @Override
-                        public java.nio.file.FileVisitResult visitFile(Path file,
-                                java.nio.file.attribute.BasicFileAttributes attrs) throws IOException {
-                            Files.delete(file);
-                            return java.nio.file.FileVisitResult.CONTINUE;
-                        }
-
-                        @Override
-                        public java.nio.file.FileVisitResult postVisitDirectory(Path dir, IOException exc)
-                                throws IOException {
-                            Files.delete(dir);
-                            return java.nio.file.FileVisitResult.CONTINUE;
-                        }
-                    });
-                } catch (IOException e) {
-                    System.out.println("Error deleting user's directory");
-                }
-            }
+            folderService.deleteFolder(username);
             return true;
         } else {
             return false;

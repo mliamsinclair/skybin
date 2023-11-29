@@ -66,10 +66,12 @@ public class FolderService {
     public void deleteFolder(String folderpath) {
         // remove folder from parent folder
         Path parentPath = Paths.get(folderpath).getParent();
-        Optional<FolderInfo> parent = folderRepository.findByPath(parentPath.toString());
-        if (parent.isPresent()) {
-            parent.get().getSubfolders().removeIf(f -> f.getPath().equals(folderpath));
-            folderRepository.save(parent.get());
+        if (parentPath != null) {
+            Optional<FolderInfo> parent = folderRepository.findByPath(parentPath.toString());
+            if (parent.isPresent()) {
+                parent.get().getSubfolders().removeIf(f -> f.getPath().equals(folderpath));
+                folderRepository.save(parent.get());
+            }
         }
         // delete all subfolders
         FolderInfo folder = folderRepository.findByPath(folderpath).orElse(null);

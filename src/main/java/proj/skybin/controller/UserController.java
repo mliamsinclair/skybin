@@ -88,7 +88,7 @@ public class UserController {
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteUser(Principal principal) {
         userService.lock(principal.getName());
-        if (userService.userExists(principal.getName())) {
+        if (userService.deleteUser(principal.getName())) {
             // delete user's directory
             Path path = Paths.get(System.getProperty("user.dir"), "filedir", principal.getName());
             System.out.println("path: " + path);
