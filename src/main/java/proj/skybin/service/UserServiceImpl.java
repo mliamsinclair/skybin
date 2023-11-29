@@ -157,4 +157,10 @@ public class UserServiceImpl implements UserService {
         }
         return false;
     }
+
+    // check if user exists
+    public Boolean userExists(String username) {
+        Optional<UserInfo> user = userRepository.findByUsername(username);
+        return user.isPresent();
+    }
 }

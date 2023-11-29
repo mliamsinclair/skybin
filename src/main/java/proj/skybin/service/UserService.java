@@ -10,4 +10,5 @@ public interface UserService {
     Boolean updateUsername(String username, String newUsername);
     Boolean lock(String username);
     Boolean unlock(String username);
+    Boolean userExists(String username);
 }
