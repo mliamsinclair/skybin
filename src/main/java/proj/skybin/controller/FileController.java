@@ -9,6 +9,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.Principal;
 import java.util.List;
+import java.time.Instant;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -69,6 +70,7 @@ public class FileController {
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(Principal principal, @RequestParam String directory,
             @RequestParam MultipartFile file) throws IOException {
+        Instant start = Instant.now();
         userService.lock(principal.getName());
         // check if the directory is null/empty/invalid
         if (directory == null || directory.equals("null") || directory.equals("") || directory.equals("\\")) {
@@ -82,9 +84,20 @@ public class FileController {
         // check if the file already exists
         Path path = Paths.get(System.getProperty("user.dir"), "filedir", principal.getName(), directory,
                 file.getOriginalFilename());
+        System.out.println(path.toString());
         if (Files.exists(path)) {
-            userService.unlock(principal.getName());
-            return ResponseEntity.badRequest().body("File already exists");
+            // add a number to the end of the filename
+            int i = 1;
+            for (; i < 100; i++) {
+                path = Paths.get(System.getProperty("user.dir"), "filedir", principal.getName(), directory,
+                        file.getOriginalFilename() + "(" + i + ")");
+                if (!Files.exists(path)) {
+                    break;
+                }
+            }
+            // change the name of the file
+            String filename = file.getOriginalFilename() + "(" + i + ")";
+            path = Paths.get(System.getProperty("user.dir"), "filedir", principal.getName(), directory, filename);
         }
         // recieve the file and save it to the database
         try {
@@ -102,7 +115,7 @@ public class FileController {
         }
         FileInfo f = new FileInfo();
         f.setOwner(principal.getName());
-        String filename = file.getOriginalFilename();
+        String filename = file.getName();
         f.setName(filename);
         f.setDirectory(directory);
         f.setPath(path.toString());
@@ -110,6 +123,8 @@ public class FileController {
         // add the file to the database
         fileService.createFile(f);
         userService.unlock(principal.getName());
+        Instant end = Instant.now();
+        System.out.println("Time to upload: " + (end.toEpochMilli() - start.toEpochMilli()) + "ms");
         return ResponseEntity.ok("File was uploaded successfully");
 
     }
@@ -119,6 +134,8 @@ public class FileController {
     @GetMapping("/download")
     public ResponseEntity<Resource> getFile(Principal principal, @RequestParam String directory,
             @RequestParam String filename) throws IOException {
+        // save current timestamp
+        Instant start = Instant.now();
         userService.lock(principal.getName());
         if (directory == null || directory.equals("null") || directory.equals("") || directory.equals("\\")) {
             directory = "/";
@@ -141,6 +158,8 @@ public class FileController {
             if (resource.exists()) {
                 String mimeType = Files.probeContentType(Paths.get(path + "/" + filename));
                 userService.unlock(principal.getName());
+                Instant end = Instant.now();
+                System.out.println("Time to download: " + (end.toEpochMilli() - start.toEpochMilli()) + "ms");
                 return ResponseEntity.ok()
                         .contentType(MediaType.parseMediaType(mimeType))
                         .header(HttpHeaders.CONTENT_DISPOSITION,

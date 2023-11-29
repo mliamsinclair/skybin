@@ -16,4 +16,9 @@ public class PageController {
         return new RedirectView("/");
     }
 
+    @GetMapping("/login")
+    public RedirectView login() {
+        return new RedirectView("/");
+    }
+
 }
