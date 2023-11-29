@@ -72,6 +72,7 @@ public class FileController {
             @RequestParam MultipartFile file) throws IOException {
         Instant start = Instant.now();
         userService.lock(principal.getName());
+        String filename = file.getOriginalFilename();
         // check if the directory is null/empty/invalid
         if (directory == null || directory.equals("null") || directory.equals("") || directory.equals("\\")) {
             directory = "/";
@@ -96,7 +97,7 @@ public class FileController {
                 }
             }
             // change the name of the file
-            String filename = file.getOriginalFilename() + "(" + i + ")";
+            filename = file.getOriginalFilename() + "(" + i + ")";
             path = Paths.get(System.getProperty("user.dir"), "filedir", principal.getName(), directory, filename);
         }
         // recieve the file and save it to the database
@@ -115,7 +116,6 @@ public class FileController {
         }
         FileInfo f = new FileInfo();
         f.setOwner(principal.getName());
-        String filename = file.getName();
         f.setName(filename);
         f.setDirectory(directory);
         f.setPath(path.toString());
