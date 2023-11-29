@@ -2,14 +2,14 @@ package proj.skybin.controller;
 
 import java.security.Principal;
 
+import org.apache.catalina.connector.Request;
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -54,7 +54,7 @@ public class UserController {
     public ResponseEntity<String> createUser(@RequestBody UserInfo user) {
         UserInfo u = userService.createUser(user);
         if (u == null) {
-            throw new UsernameAlreadyExists("User already exists");
+            return ResponseEntity.badRequest().body("User already exists");
         }
         return ResponseEntity.ok("User created");
     }
@@ -62,13 +62,17 @@ public class UserController {
     // authenticate a user and return a token
     // tokens are valid for two hours
     @PostMapping("/authenticate")
-    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
-        if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(authRequest.getUsername());
-        } else {
-            throw new UsernameNotFoundException("User does not exist!");
+    public ResponseEntity<String> authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+            if (authentication.isAuthenticated()) {
+                return ResponseEntity.ok(jwtService.generateToken(authRequest.getUsername()));
+            } else {
+                return ResponseEntity.badRequest().body("Authentication failed");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Incorrent username or password");
         }
     }
 
@@ -145,17 +149,5 @@ public class UserController {
         }
         userService.unlock(principal.getName());
         return ResponseEntity.badRequest().body("User not found");
-    }
-
-    // exception for when a user already exists
-    public class UsernameAlreadyExists extends RuntimeException {
-        public UsernameAlreadyExists(String message) {
-            super(message);
-        }
-    }
-
-    @ExceptionHandler(UsernameAlreadyExists.class)
-    public ResponseEntity<String> handleUsernameAlreadyExists(UsernameAlreadyExists e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

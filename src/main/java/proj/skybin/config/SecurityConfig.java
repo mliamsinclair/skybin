@@ -40,7 +40,7 @@ public class SecurityConfig {
         return http.csrf(csrf -> csrf.disable())
                 // allow requests to the specified endpoints
                 .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/create", "/api/authenticate", "/static/**", "/**.html", "/**.js", "/**.css", "/", "/**.png", "/account", "/**").permitAll())
+                .requestMatchers("/api/create", "/api/authenticate", "/static/**", "/**.html", "/**.js", "/**.css", "/", "/**.png", "/account", "/**", "/directory", "/about").permitAll())
                 // require authentication for all other requests
                 .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/**").authenticated())
