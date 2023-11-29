@@ -140,11 +140,13 @@ public class FileController {
         // save current timestamp
         Instant start = Instant.now();
         userService.lock(principal.getName());
-        if (directory == null || directory.equals("null") || directory.equals("") || directory.equals("\\")) {
+        if (directory == null || directory.equals("null") || directory.equals("") || directory.equals("\\")
+                || directory.equals(principal.getName())) {
             directory = "/";
         }
         // get the file from the server
-        Path pathObject = Paths.get(System.getProperty("user.dir"), "filedir", principal.getName(), directory, filename);
+        Path pathObject = Paths.get(System.getProperty("user.dir"), "filedir", principal.getName(), directory,
+                filename);
         String path = pathObject.toString();
         System.out.println(path);
         Resource resource = new FileSystemResource(path);
@@ -304,7 +306,8 @@ public class FileController {
         List<FileInfo> files = fileService.getDirectoryContents(directory, owner);
         userService.unlock(principal.getName());
         return ResponseEntity.ok(files);
-    } 
+    }
+
     // uses the provided token to get the username
     @GetMapping("/file")
     public ResponseEntity<FileInfo> getFileInfo(Principal principal, @RequestParam String directory,
@@ -321,8 +324,8 @@ public class FileController {
         }
         userService.unlock(principal.getName());
         return ResponseEntity.ok(f);
-    } 
-    
+    }
+
     // uses the provided token to get the username
     // requires the directory and foldername of the folder
     @GetMapping("/folder")
