@@ -107,6 +107,7 @@ public class FileController {
             try {
                 // replace all back slashes with forward slashes
                 String newPath = path.toString().replace("\\", "/");
+                System.out.println(newPath);
                 path = Paths.get(newPath);
                 Files.copy(file.getInputStream(), path);
             } catch (IOException e2) {
@@ -141,12 +142,17 @@ public class FileController {
             directory = "/";
         }
         // get the file from the server
-        String path = System.getProperty("user.dir") + "/filedir/" + principal.getName() + directory;
-        Resource resource = new FileSystemResource(path + "/" + filename);
+        String path = System.getProperty("user.dir") + "/filedir/" + principal.getName() + directory + filename;
+        Resource resource = new FileSystemResource(path);
         // check if the file exists
         if (resource.exists()) {
             String mimeType = Files.probeContentType(Paths.get(path + "/" + filename));
+            if (mimeType == null) {
+                mimeType = "application/octet-stream";
+            }
             userService.unlock(principal.getName());
+            Instant end = Instant.now();
+            System.out.println("Time to download: " + (end.toEpochMilli() - start.toEpochMilli()) + "ms");
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(mimeType))
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
@@ -154,9 +160,12 @@ public class FileController {
         } else {
             // replace all back slashes with forward slashes
             path = path.replace("\\", "/");
-            resource = new FileSystemResource(path + "/" + filename);
+            resource = new FileSystemResource(path);
             if (resource.exists()) {
                 String mimeType = Files.probeContentType(Paths.get(path + "/" + filename));
+                if (mimeType == null) {
+                    mimeType = "application/octet-stream";
+                }
                 userService.unlock(principal.getName());
                 Instant end = Instant.now();
                 System.out.println("Time to download: " + (end.toEpochMilli() - start.toEpochMilli()) + "ms");
