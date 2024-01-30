@@ -4,7 +4,7 @@ SkyBin is a file sharing service accessed through the user's web browser. It con
 
 ## Getting Started
 
-To run the application, follow these steps:
+To run the application on MacOS or Linux, follow these steps:
 
 1. Clone the repository.
 2. Build the project using Maven: `mvn clean install`.
