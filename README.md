@@ -26,10 +26,6 @@ To run the application, follow these steps:
 - REST API
 - Maven
 
-## Contributing
+## Documentation
 
-Contributions are welcome! Please fork the repository and submit a pull request.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
+For detailed documentation, please refer to the [SkyBin Documentation](https://mliamsinclair.dev/assets/SkybinDocumentation-Llwm61M6.pdf).
