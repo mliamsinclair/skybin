@@ -4,7 +4,8 @@ SkyBin is a file sharing service accessed through the user's web browser. It con
 
 ## Getting Started
 
-To run the application on MacOS or Linux, follow these steps:
+This application functions as a web server that allows for clients to connect through their browser and use the application to store and manage their files. The Skybin web server is best run on Mac and Linux operating systems.
+To run the application, follow these steps:
 
 1. Clone the repository.
 2. Set up a local MySQL database named "Skybin".
